@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by vakhtanggelashvili on 4/12/17.
  */
 
-class BookedTime {
+public class BookedTime {
     private long id;
 
     private Date startDate;

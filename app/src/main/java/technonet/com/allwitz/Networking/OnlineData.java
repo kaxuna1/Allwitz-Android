@@ -22,7 +22,7 @@ public class OnlineData {
     public static Retrofit retrofit = new Retrofit.Builder()
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://192.168.1.34:8080/")
+            .baseUrl("http://192.168.43.168:8080/")
             .build();
     public static void login(String email,String password,final Action1<Session> onSession){
 
@@ -57,19 +57,9 @@ public class OnlineData {
         try{
             sessionObservable
                     .subscribeOn(Schedulers.newThread())
-                    .doOnError(new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
-                    })
+                    .doOnError(throwable -> throwable.printStackTrace())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<Category>>() {
-                        @Override
-                        public void call(List<Category> categories) {
-                            onCategories.call(categories);
-                        }
-                    });
+                    .subscribe(categories -> onCategories.call(categories));
         }catch (Exception e){
             e.printStackTrace();
         }
