@@ -26,7 +26,7 @@ public interface ScheduleService {
     Observable<List<FreeInterval>> scheduleForDays(@Path("id") long id,@Path("days") int days);
 
     @GET("getscheduledtimeforlesson/{id}/{cat}/{days}")
-    Observable<List<BookedTime>> scheduledTimeForLesson(@Path("id") long id,@Path("cat") int cat,@Path("days") int days);
+    Observable<List<BookedTime>> scheduledTimeForLesson(@Path("id") long id,@Path("cat") long cat,@Path("days") int days);
 
     @GET("getscheduledtimeforuser/{id}/{days}")
     Observable<List<BookedTime>> scheduledTimeForUser(@Path("id") long id,@Path("days") int days);
