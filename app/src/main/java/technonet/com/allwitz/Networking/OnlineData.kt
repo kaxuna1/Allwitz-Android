@@ -8,6 +8,7 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Action1
 import rx.schedulers.Schedulers
 import technonet.com.allwitz.Models.*
+import technonet.com.allwitz.Static.Variables
 
 /**
  * Created by vakhtanggelashvili on 4/12/17.
@@ -17,7 +18,7 @@ object OnlineData {
     var retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://192.168.1.34:8080/")
+            .baseUrl(Variables.url)
             .build()
 
     fun login(email: String, password: String, onSession: Action1<Session>) {
