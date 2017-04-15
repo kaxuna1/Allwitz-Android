@@ -47,7 +47,7 @@
             android:theme="@style/AppTheme.AppBarOverlay"
             app:expandedTitleTextAppearance="@style/TextAppearance.ExpandedTitle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:maxLines="3">
+            app:maxLines="5">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -57,9 +57,24 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
             <RelativeLayout
+                android:background="@drawable/gradcolor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
+                <mehdi.sakout.fancybuttons.FancyButton
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/btnClass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:layout_margin="15dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="10dp"
+                    fancy:fb_borderWidth="1dp"
+                    fancy:fb_defaultColor="#51008db8"
+                    fancy:fb_radius="3dp"
+                    fancy:fb_text="CLASS"
+                    fancy:fb_textColor="#FFFFFF" />
                 <Button
                     android:id="@+id/button5"
                     android:layout_width="fill_parent"
