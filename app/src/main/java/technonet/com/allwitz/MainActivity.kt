@@ -33,6 +33,7 @@ import android.widget.TextView
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.mikepenz.iconics.context.IconicsLayoutInflater
+import com.squareup.picasso.Picasso
 import com.yalantis.phoenix.PullToRefreshView
 import info.hoang8f.android.segmented.SegmentedGroup
 import org.greenrobot.eventbus.EventBus
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
     internal var frame: FrameLayout? = null
     internal var searchView: ConstraintLayout? = null
     internal var exploreView: PullToRefreshView? = null
+
+
+    internal var exploreCategoriesListView:ListView?=null
 
     internal var accoutView: LinearLayout? = null
     internal var searchResultView: LinearLayout? = null
@@ -89,7 +93,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    public var activity: MainActivity? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        activity=this;
         LayoutInflaterCompat.setFactory(getLayoutInflater(), IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState)
         this.setTheme(R.style.AppTheme)
@@ -100,12 +107,14 @@ class MainActivity : AppCompatActivity() {
         inflater = this.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         searchView = inflater!!.inflate(R.layout.search_layout, null) as ConstraintLayout
         exploreView = inflater!!.inflate(R.layout.explore_layout, null) as PullToRefreshView
+        exploreCategoriesListView = exploreView!!.findViewById(R.id.explore_list) as ListView
         exploreView!!.setOnRefreshListener({
             exploreView!!.postDelayed({
                 exploreView!!.setRefreshing(false)
             },
                     1000)
         })
+        loadDataInExploreCategoriesListView();
         searchResultView = inflater!!.inflate(R.layout.search_result_layout, null) as LinearLayout
 
 
@@ -130,6 +139,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         initSearchViewHandlers()
+    }
+
+    fun loadDataInExploreCategoriesListView(){
+        OnlineData.categories(Action1 {
+            exploreCategoriesListView!!.adapter = ListCategoryExploreAdapter(this, it)
+        })
     }
 
     fun initSearchViewHandlers() {
@@ -167,6 +182,66 @@ class MainActivity : AppCompatActivity() {
         Log.d("fromMainPAge", event.name);
         cityChooseBtn!!.text = event.name;
         cityId = event.id
+    }
+
+    private class ListCategoryExploreAdapter(context: Context,data:List<Category>) : BaseAdapter() {
+
+
+        private val mInflator: LayoutInflater
+        private val data:List<Category>
+        private val context:Context
+        init {
+            this.context=context;
+            this.mInflator = LayoutInflater.from(context)
+            this.data = data
+        }
+
+        override fun getCount(): Int {
+            return data.size
+        }
+
+        override fun getItem(position: Int): Any {
+            return data[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+            val view: View?
+            val vh: ListRowHolder
+            if (convertView == null) {
+                view = this.mInflator.inflate(R.layout.explore_item, parent, false)
+                vh = ListRowHolder(view)
+                view.tag = vh
+            } else {
+                view = convertView
+                vh = view.tag as ListRowHolder
+            }
+
+            vh.label.text = data[position].name
+            Picasso.with(context).load("${url}/categorylogo/${data[position].id}").resize(400,400).centerCrop().into(vh.pic)
+
+            var paramsPic =  vh.pic.getLayoutParams() as RelativeLayout.LayoutParams
+            var paramsLabel =  vh.label.getLayoutParams() as RelativeLayout.LayoutParams
+
+            paramsPic.addRule(RelativeLayout.ALIGN_PARENT_START,RelativeLayout.TRUE)
+            paramsLabel.addRule(RelativeLayout.ALIGN_PARENT_END,RelativeLayout.TRUE)
+
+
+
+            return view
+        }
+    }
+    private class ListRowHolder(row: View?) {
+        public val label: TextView
+        public val pic: ImageView
+
+        init {
+            this.label = row?.findViewById(R.id.explore_list_item_label) as TextView
+            this.pic = row?.findViewById(R.id.explore_list_item_img) as ImageView
+        }
     }
 
 
