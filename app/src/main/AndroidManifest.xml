@@ -3,7 +3,8 @@
     package="technonet.com.allwitz">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,6 +26,14 @@
             android:name=".ClassChooseActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".CityChooseActivity"></activity>
+        <activity
+            android:name="studios.codelight.smartloginlibrary.SmartLoginActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
     </application>
 
 </manifest>

@@ -32,6 +32,7 @@ import technonet.com.allwitz.Networking.OnlineData
 import android.widget.TextView
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import com.github.florent37.materialtextfield.MaterialTextField
 import com.mikepenz.iconics.context.IconicsLayoutInflater
 import com.squareup.picasso.Picasso
 import com.yalantis.phoenix.PullToRefreshView
@@ -52,16 +53,19 @@ class MainActivity : AppCompatActivity() {
     internal var frame: FrameLayout? = null
     internal var searchView: ConstraintLayout? = null
     internal var exploreView: PullToRefreshView? = null
+    internal var loginView: LinearLayout? = null
 
 
-    internal var exploreCategoriesListView:ListView?=null
-
+    internal var exploreCategoriesListView: ListView? = null
     internal var accoutView: LinearLayout? = null
     internal var searchResultView: LinearLayout? = null
     internal var inflater: LayoutInflater? = null
     internal var adapter: ArrayAdapter<String>? = null
     internal var adapterCity: ArrayAdapter<String>? = null
     internal var searchContainer: LinearLayout? = null
+
+    internal var emailLoginField: MaterialTextField?= null
+    internal var passwordLoginField: MaterialTextField?= null
 
     var classId: Long = 0;
     var cityId: Long = 0;
@@ -85,7 +89,9 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
+                frame!!.addView(loginView)
                 return@OnNavigationItemSelectedListener true
+
             }
 
         }
@@ -96,7 +102,7 @@ class MainActivity : AppCompatActivity() {
     public var activity: MainActivity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        activity=this;
+        activity = this;
         LayoutInflaterCompat.setFactory(getLayoutInflater(), IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState)
         this.setTheme(R.style.AppTheme)
@@ -107,17 +113,22 @@ class MainActivity : AppCompatActivity() {
         inflater = this.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         searchView = inflater!!.inflate(R.layout.search_layout, null) as ConstraintLayout
         exploreView = inflater!!.inflate(R.layout.explore_layout, null) as PullToRefreshView
+        loginView = inflater!!.inflate(R.layout.login, null) as LinearLayout
         exploreCategoriesListView = exploreView!!.findViewById(R.id.explore_list) as ListView
         exploreView!!.setOnRefreshListener({
-            exploreView!!.postDelayed({
-                exploreView!!.setRefreshing(false)
-            },
-                    1000)
+            loadDataInExploreCategoriesListView();
         })
         loadDataInExploreCategoriesListView();
         searchResultView = inflater!!.inflate(R.layout.search_result_layout, null) as LinearLayout
 
+        emailLoginField = loginView!!.findViewById(R.id.emailfieldmaterial) as MaterialTextField
 
+
+
+        passwordLoginField = loginView!!.findViewById(R.id.passwordfieldmaterial) as MaterialTextField
+
+        passwordLoginField!!.expand()
+        emailLoginField!!.expand()
 
 
         frame!!.addView(searchView)
@@ -141,9 +152,10 @@ class MainActivity : AppCompatActivity() {
         initSearchViewHandlers()
     }
 
-    fun loadDataInExploreCategoriesListView(){
+    fun loadDataInExploreCategoriesListView() {
         OnlineData.categories(Action1 {
             exploreCategoriesListView!!.adapter = ListCategoryExploreAdapter(this, it)
+            exploreView!!.setRefreshing(false)
         })
     }
 
@@ -184,14 +196,15 @@ class MainActivity : AppCompatActivity() {
         cityId = event.id
     }
 
-    private class ListCategoryExploreAdapter(context: Context,data:List<Category>) : BaseAdapter() {
+    private class ListCategoryExploreAdapter(context: Context, data: List<Category>) : BaseAdapter() {
 
 
         private val mInflator: LayoutInflater
-        private val data:List<Category>
-        private val context:Context
+        private val data: List<Category>
+        private val context: Context
+
         init {
-            this.context=context;
+            this.context = context;
             this.mInflator = LayoutInflater.from(context)
             this.data = data
         }
@@ -210,39 +223,34 @@ class MainActivity : AppCompatActivity() {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
             val view: View?
-            val vh: ListRowHolder
             if (convertView == null) {
-                view = this.mInflator.inflate(R.layout.explore_item, parent, false)
-                vh = ListRowHolder(view)
-                view.tag = vh
+                if (position % 2 == 0)
+                    view = this.mInflator.inflate(R.layout.explore_item, parent, false)
+                else
+                    view = this.mInflator.inflate(R.layout.explore_item2, parent, false)
             } else {
                 view = convertView
-                vh = view.tag as ListRowHolder
             }
+            val label = view?.findViewById(R.id.explore_list_item_label) as TextView
+            val pic = view?.findViewById(R.id.explore_list_item_img) as ImageView
+            label.text = data[position].name
+            Picasso.with(context).load("${url}/categorylogo/${data[position].id}").resize(700, 700).centerCrop().into(pic)
 
-            vh.label.text = data[position].name
-            Picasso.with(context).load("${url}/categorylogo/${data[position].id}").resize(400,400).centerCrop().into(vh.pic)
-
-            var paramsPic =  vh.pic.getLayoutParams() as RelativeLayout.LayoutParams
-            var paramsLabel =  vh.label.getLayoutParams() as RelativeLayout.LayoutParams
-
-            paramsPic.addRule(RelativeLayout.ALIGN_PARENT_START,RelativeLayout.TRUE)
-            paramsLabel.addRule(RelativeLayout.ALIGN_PARENT_END,RelativeLayout.TRUE)
 
 
 
             return view
         }
     }
-    private class ListRowHolder(row: View?) {
-        public val label: TextView
-        public val pic: ImageView
+    /*   private class ListRowHolder(row: View?) {
+           public val label: TextView
+           public val pic: ImageView
 
-        init {
-            this.label = row?.findViewById(R.id.explore_list_item_label) as TextView
-            this.pic = row?.findViewById(R.id.explore_list_item_img) as ImageView
-        }
-    }
+           init {
+               this.label = row?.findViewById(R.id.explore_list_item_label) as TextView
+               this.pic = row?.findViewById(R.id.explore_list_item_img) as ImageView
+           }
+       }*/
 
 
 }
