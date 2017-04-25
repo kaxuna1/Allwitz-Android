@@ -31,6 +31,5 @@ class SearchView(context: Context) : CoordinatorLayout(context) {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         mInternalOuterView = inflater.inflate(R.layout.search_layout,null) as ConstraintLayout
         this.addView(mInternalOuterView)
-
     }
 }

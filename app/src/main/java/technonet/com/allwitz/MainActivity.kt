@@ -3,6 +3,7 @@ package technonet.com.allwitz
 import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -36,10 +37,13 @@ import com.github.florent37.materialtextfield.MaterialTextField
 import com.mikepenz.iconics.context.IconicsLayoutInflater
 import com.squareup.picasso.Picasso
 import com.yalantis.phoenix.PullToRefreshView
+import de.hdodenhof.circleimageview.CircleImageView
 import info.hoang8f.android.segmented.SegmentedGroup
+import info.hoang8f.widget.FButton
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.w3c.dom.Text
 import technonet.com.allwitz.EventTypes.CityChooseEvent
 import technonet.com.allwitz.EventTypes.ClassChooseEvent
 import technonet.com.allwitz.Static.Variables.eventBus
@@ -54,7 +58,11 @@ class MainActivity : AppCompatActivity() {
     internal var searchView: ConstraintLayout? = null
     internal var exploreView: PullToRefreshView? = null
     internal var loginView: LinearLayout? = null
+    internal var profileView: LinearLayout? = null
 
+
+    internal var pref: SharedPreferences? = null
+    internal var editor: SharedPreferences.Editor? = null
 
     internal var exploreCategoriesListView: ListView? = null
     internal var accoutView: LinearLayout? = null
@@ -64,8 +72,12 @@ class MainActivity : AppCompatActivity() {
     internal var adapterCity: ArrayAdapter<String>? = null
     internal var searchContainer: LinearLayout? = null
 
-    internal var emailLoginField: MaterialTextField?= null
-    internal var passwordLoginField: MaterialTextField?= null
+    internal var emailLoginField: MaterialTextField? = null
+    internal var passwordLoginField: MaterialTextField? = null
+    internal var loginButton: FButton? = null
+
+    internal var profilePic: CircleImageView? = null
+    internal var logoutBtn: TextView? = null
 
     var classId: Long = 0;
     var cityId: Long = 0;
@@ -89,9 +101,14 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                frame!!.addView(loginView)
+                val sessionId = pref!!.getString("sessionId", "0")
+                if (sessionId == "0") {
+                    frame!!.addView(loginView)
+                } else {
+                    frame!!.addView(profileView)
+                    initProfilePage()
+                }
                 return@OnNavigationItemSelectedListener true
-
             }
 
         }
@@ -103,10 +120,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         activity = this;
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), IconicsLayoutInflater(getDelegate()));
+        LayoutInflaterCompat.setFactory(getLayoutInflater(), IconicsLayoutInflater(getDelegate()))
         super.onCreate(savedInstanceState)
         this.setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_main)
+        pref = this.applicationContext.getSharedPreferences("MyPref", 0); // 0 - for private mode
+        editor = pref!!.edit();
+
         val navigation = findViewById(R.id.navigation) as BottomNavigationView
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         frame = findViewById(R.id.content) as FrameLayout
@@ -114,31 +134,50 @@ class MainActivity : AppCompatActivity() {
         searchView = inflater!!.inflate(R.layout.search_layout, null) as ConstraintLayout
         exploreView = inflater!!.inflate(R.layout.explore_layout, null) as PullToRefreshView
         loginView = inflater!!.inflate(R.layout.login, null) as LinearLayout
+        profileView = inflater!!.inflate(R.layout.profile, null) as LinearLayout
         exploreCategoriesListView = exploreView!!.findViewById(R.id.explore_list) as ListView
         exploreView!!.setOnRefreshListener({
             loadDataInExploreCategoriesListView();
         })
         loadDataInExploreCategoriesListView();
         searchResultView = inflater!!.inflate(R.layout.search_result_layout, null) as LinearLayout
-
         emailLoginField = loginView!!.findViewById(R.id.emailfieldmaterial) as MaterialTextField
-
-
-
         passwordLoginField = loginView!!.findViewById(R.id.passwordfieldmaterial) as MaterialTextField
+        loginButton = loginView!!.findViewById(R.id.loginButton) as FButton
+
+
+        profilePic=profileView!!.findViewById(R.id.profile_image) as CircleImageView
+        logoutBtn=profileView!!.findViewById(R.id.logoutBtn) as TextView
 
         passwordLoginField!!.expand()
         emailLoginField!!.expand()
+        loginButton!!.setOnClickListener {
+            OnlineData.login(
+                    email = emailLoginField!!.editText.text.toString(),
+                    password = passwordLoginField!!.editText.text.toString(),
+                    onSession = Action1 {
+                        session ->
+                        editor!!.putString("sessionId", session.id.toString())
+                        editor!!.putString("userId",session.userId.toString())
+                        editor!!.commit(); // commit changes
+                        frame!!.removeAllViews()
+                        frame!!.addView(profileView)
+                        initProfilePage()
+                    })
+        }
+
 
 
         frame!!.addView(searchView)
         classChooseBtn = searchView!!.findViewById(R.id.classBtnSearch) as Button
         cityChooseBtn = searchView!!.findViewById(R.id.cityBtnSearch) as Button
         searchBtn = searchView!!.findViewById(R.id.search_btn) as Button
-
         classChooseBtn!!.setOnClickListener {
             val intent = Intent(this, ClassChooseActivity::class.java)
             startActivity(intent);
+            OnlineData.orders(1, Action1 {
+
+            })
         }
         cityChooseBtn!!.setOnClickListener {
             val intent = Intent(this, CityChooseActivity::class.java)
@@ -148,8 +187,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("kaxa", "${cityId} ${classId}")
 
         }
-
-        initSearchViewHandlers()
+        initSearchViewHandlers();
     }
 
     fun loadDataInExploreCategoriesListView() {
@@ -241,6 +279,24 @@ class MainActivity : AppCompatActivity() {
 
             return view
         }
+    }
+    fun initProfilePage(){
+
+        var link="${url}profilePic/${pref!!.getString("userId","0")}";
+        Log.d("urlKaxa",link)
+        Picasso.with(activity)
+                .load(link)
+                .centerCrop()
+                .resize(300,300)
+                .into(profilePic)
+        logoutBtn!!.setOnClickListener {
+            editor!!.remove("sessionId")
+            editor!!.remove("userId")
+            editor!!.commit()
+            frame!!.removeAllViews();
+            frame!!.addView(loginView)
+        }
+
     }
     /*   private class ListRowHolder(row: View?) {
            public val label: TextView

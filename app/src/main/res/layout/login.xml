@@ -40,7 +40,9 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:id="@+id/emailfieldmaterial">
+            android:id="@+id/emailfieldmaterial"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
 
             <EditText
                 android:layout_width="match_parent"
@@ -61,7 +63,9 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
             android:id="@+id/passwordfieldmaterial"
-            app:layout_constraintLeft_toLeftOf="parent">
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
 
             <EditText
                 android:layout_width="match_parent"
@@ -73,7 +77,7 @@
 
         </com.github.florent37.materialtextfield.MaterialTextField>
         <info.hoang8f.widget.FButton
-            android:id="@+id/f_twitter_button"
+            android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -86,7 +90,7 @@
             android:paddingTop="-5dp"
             android:text="Login"
             android:textColor="@android:color/white"
-            fbutton:cornerRadius="15dp"
+            fbutton:cornerRadius="10dp"
             fbutton:shadowEnabled="true"
             fbutton:shadowHeight="6dp"
             android:layout_marginRight="8dp"
@@ -96,8 +100,61 @@
             android:layout_marginTop="20dp"
             app:layout_constraintTop_toBottomOf="@+id/passwordfieldmaterial"
             app:layout_constraintHorizontal_bias="0.494"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/loginButton"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.494"
             android:layout_marginBottom="8dp"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0">
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:id="@+id/googleLogin"
+                android:layout_width="145dp"
+                android:layout_height="60dp"
+                app:fb_defaultColor="#db4437"
+                app:fb_focusColor="#db4400"
+                app:fb_fontIconResource="&#xf0d5;"
+                app:fb_fontIconSize="20sp"
+                app:fb_iconPaddingLeft="12dp"
+
+                app:fb_iconPosition="left"
+                app:fb_radius="5dp"
+                app:fb_text="Google"
+                app:fb_textColor="#ffffff"
+                app:fb_textSize="16sp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/f_twitter_button">
+
+            </mehdi.sakout.fancybuttons.FancyButton>
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:id="@+id/facebook_login"
+                android:layout_width="145dp"
+                android:layout_marginStart="10dp"
+                android:layout_height="60dp"
+                app:fb_defaultColor="#39579B"
+                app:fb_focusColor="#6183d2"
+                app:fb_fontIconResource="&#xf230;"
+                app:fb_fontIconSize="20sp"
+                app:fb_iconPaddingLeft="10dp"
+                app:fb_iconPosition="left"
+                app:fb_radius="5dp"
+                app:fb_text="Facebook"
+                app:fb_textColor="#ffffff"
+                app:fb_textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@+id/f_twitter_button"
+                fbutton:layout_editor_absoluteX="63dp" />
+        </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 </LinearLayout>

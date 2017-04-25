@@ -27,6 +27,13 @@ class ClassChooseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_class_choose)
+
+        OnlineData.login("","", Action1 {
+            it
+        })
+
+
+
         OnlineData.categories(Action1 {
             val lv = findViewById(R.id.classList) as ListView
             lv.adapter = ListExampleAdapter(this,it)
