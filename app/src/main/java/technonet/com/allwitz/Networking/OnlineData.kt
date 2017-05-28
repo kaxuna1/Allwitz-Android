@@ -54,6 +54,7 @@ object OnlineData {
     }
 
     fun categories(onCategories: Action1<List<Category>>) {
+
         val sessionObservable = retrofit.create<CategoryService>(CategoryService::class.java!!)
                 .categories()
         try {

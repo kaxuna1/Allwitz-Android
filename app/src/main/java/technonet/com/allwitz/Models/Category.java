@@ -23,17 +23,11 @@ public class Category {
         this.name = name;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
     private String name;
 
-    private String uuid;
+  //  private String uuid;
 
     public Category(){}
 }

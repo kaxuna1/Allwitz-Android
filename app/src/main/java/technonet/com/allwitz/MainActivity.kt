@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomNavigationView
@@ -50,6 +51,8 @@ import technonet.com.allwitz.Static.Variables.eventBus
 import technonet.com.allwitz.Static.Variables.url
 import technonet.com.allwitz.Views.SearchView
 import technonet.com.allwitz.Views.TopCategoryCardView
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     internal var frame: FrameLayout? = null
     internal var searchView: ConstraintLayout? = null
     internal var exploreView: PullToRefreshView? = null
-    internal var loginView: LinearLayout? = null
+    internal var loginView: RelativeLayout? = null
     internal var profileView: LinearLayout? = null
 
 
@@ -119,9 +122,20 @@ class MainActivity : AppCompatActivity() {
     public var activity: MainActivity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        activity = this;
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), IconicsLayoutInflater(getDelegate()))
+        //LayoutInflaterCompat.setFactory(getLayoutInflater(), IconicsLayoutInflater(getDelegate()))
         super.onCreate(savedInstanceState)
+
+        var cal = CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/light.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+
+
+        CalligraphyConfig.initDefault(cal);
+
+
+        activity = this;
+
         this.setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_main)
         pref = this.applicationContext.getSharedPreferences("MyPref", 0); // 0 - for private mode
@@ -133,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         inflater = this.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         searchView = inflater!!.inflate(R.layout.search_layout, null) as ConstraintLayout
         exploreView = inflater!!.inflate(R.layout.explore_layout, null) as PullToRefreshView
-        loginView = inflater!!.inflate(R.layout.login, null) as LinearLayout
+        loginView = inflater!!.inflate(R.layout.login, null) as RelativeLayout
         profileView = inflater!!.inflate(R.layout.profile, null) as LinearLayout
         exploreCategoriesListView = exploreView!!.findViewById(R.id.explore_list) as ListView
         exploreView!!.setOnRefreshListener({
@@ -141,17 +155,14 @@ class MainActivity : AppCompatActivity() {
         })
         loadDataInExploreCategoriesListView();
         searchResultView = inflater!!.inflate(R.layout.search_result_layout, null) as LinearLayout
-        emailLoginField = loginView!!.findViewById(R.id.emailfieldmaterial) as MaterialTextField
-        passwordLoginField = loginView!!.findViewById(R.id.passwordfieldmaterial) as MaterialTextField
-        loginButton = loginView!!.findViewById(R.id.loginButton) as FButton
+
 
 
         profilePic=profileView!!.findViewById(R.id.profile_image) as CircleImageView
         logoutBtn=profileView!!.findViewById(R.id.logoutBtn) as TextView
 
-        passwordLoginField!!.expand()
-        emailLoginField!!.expand()
-        loginButton!!.setOnClickListener {
+
+      /*  loginButton!!.setOnClickListener {
             OnlineData.login(
                     email = emailLoginField!!.editText.text.toString(),
                     password = passwordLoginField!!.editText.text.toString(),
@@ -164,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                         frame!!.addView(profileView)
                         initProfilePage()
                     })
-        }
+        }*/
 
 
 
@@ -175,9 +186,6 @@ class MainActivity : AppCompatActivity() {
         classChooseBtn!!.setOnClickListener {
             val intent = Intent(this, ClassChooseActivity::class.java)
             startActivity(intent);
-            OnlineData.orders(1, Action1 {
-
-            })
         }
         cityChooseBtn!!.setOnClickListener {
             val intent = Intent(this, CityChooseActivity::class.java)
@@ -188,6 +196,28 @@ class MainActivity : AppCompatActivity() {
 
         }
         initSearchViewHandlers();
+
+
+        val iwant = searchView!!.findViewById(R.id.iwant) as TextView
+
+        val toLearnc = searchView!!.findViewById(R.id.tolearn) as TextView
+
+        val allwitz = searchView!!.findViewById(R.id.allwitz) as TextView
+
+
+        val bold = Typeface.createFromAsset(this.getAssets(), "fonts/bold.otf");
+        val light = Typeface.createFromAsset(this.getAssets(), "fonts/light.otf");
+        val norm = Typeface.createFromAsset(this.getAssets(), "fonts/norm.otf");
+
+
+
+
+        iwant.setTypeface(bold)
+        toLearnc.setTypeface(light)
+        allwitz.setTypeface(bold)
+        classChooseBtn!!.setTypeface(light);
+        cityChooseBtn!!.setTypeface(light);
+
     }
 
     fun loadDataInExploreCategoriesListView() {
@@ -227,6 +257,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+
+
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: CityChooseEvent) {
         Log.d("fromMainPAge", event.name);

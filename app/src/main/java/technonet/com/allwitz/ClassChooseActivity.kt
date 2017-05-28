@@ -28,9 +28,6 @@ class ClassChooseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_class_choose)
 
-        OnlineData.login("","", Action1 {
-            it
-        })
 
 
 
